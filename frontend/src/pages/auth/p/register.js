@@ -1,8 +1,10 @@
 import HeaderPage from "@/components/HeaderPage";
-import React from "react";
+import React, { useState } from "react";
 import { Tooltip } from "react-tooltip";
 import ReactDOMServer from "react-dom/server";
 import Link from "next/link";
+import { FaCaretDown } from "react-icons/fa";
+import { countries } from "@/data";
 
 const Register = () => {
   const PLACES = [
@@ -19,6 +21,26 @@ const Register = () => {
     "left-start",
     "left-end",
   ];
+
+  const [countriesList, setCountriesList] = useState(countries);
+  const [text, setText] = useState("");
+  const [countriesL, setShowCountries] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(
+    "Click to select a country"
+  );
+
+  const handleCountryChoice = (e) => {
+    // setText(e.target.value);
+
+    if (e.target.value === "") {
+      setCountriesList(countries);
+    } else {
+      const filteredList = countriesList.filter((item) => {
+        return item.name.toUpperCase().includes(e.target.value.toUpperCase());
+      });
+      setCountriesList(filteredList.length > 0 ? [...filteredList] : countries);
+    }
+  };
   return (
     <>
       <Tooltip
@@ -66,12 +88,57 @@ const Register = () => {
               <label htmlFor="">Last Name</label>
               <input type="text" />
               <label htmlFor="">Country/Region</label>
-              <input type="text" />
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+
+                  setShowCountries(true);
+                  console.log(countriesL);
+                }}
+                className="btn flex items-center justify-between"
+              >
+                {selectedCountry}
+                <FaCaretDown />
+              </button>
+              <div
+                className={`relative  bg-white ${
+                  countriesL ? "block" : "hidden"
+                }`}
+              >
+                {" "}
+                <div className="p-[.7rem] overflow-y-scroll drop-cown bg-white shadow-md w-full absolute top-0 left-0 h-[200px]">
+                  <input
+                    type="text"
+                    // value={text}
+                    onChange={handleCountryChoice}
+                    className="w-full rounded-md shadow-inner"
+                  />
+
+                  <ul>
+                    {countriesList.map((item) => (
+                      <li>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShowCountries(false);
+                            console.log(countriesL);
+                            setSelectedCountry(item.name);
+                          }}
+                          className="p-[.2rem] mt-[.6rem] px-[.7rem] hover:text-white border-b w-full text-left hover:bg-gray-500 rounded-lg"
+                        >
+                          {item.name}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
               <label htmlFor="">Your institution email</label>
               <input type="text" id="ins-co" />
               <div className="flex justify-between items-center">
                 <label htmlFor="">Password</label>
-                <button className="underline text-[.8rem] font-bold">
+                <button className="underline text-[.8rem] font-bold ">
                   show password
                 </button>
               </div>
@@ -87,7 +154,7 @@ const Register = () => {
               </div>
 
               <Link
-                className="w-full bg-[#0080ff] shadow-lg shadow-inner block py-[.4rem] text-center mt-[1.2rem]"
+                className="w-full bg-[#0080ff] text-white font-semibold shadow-inner block py-[.4rem] text-center mt-[1.2rem]"
                 href="/"
               >
                 Continue
